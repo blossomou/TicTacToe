@@ -1,6 +1,9 @@
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, ImageBackground, Pressable, Alert } from "react-native";
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
+
+import Cell from './src/components/Cell';
+
 const bg = require("./assets/bg.jpeg");
 
 const emptyMap = [
@@ -130,23 +133,17 @@ export default function App() {
     ]);
     setCurrentTurn("x");
   };
+
+  // const onPressHandler = () => onPress(rowIndex, columnIndex);
   return (
     <View style={styles.container}>
       <ImageBackground source={bg} style={styles.bg} resizeMode="contain">
-        <Text>Current Turn: {}</Text>
+        <Text style={{ fontSize: 24, color: "white", position: "absolute", top: 50 }}>Current Turn: {currentTurn.toUpperCase()}</Text>
         <View style={styles.map}>
           {map.map((row, rowIndex) => (
             <View key={`row-${rowIndex}`} style={styles.row}>
               {row.map((cell, columnIndex) => (
-                <Pressable key={`row-${rowIndex}-col-${columnIndex}`} onPress={() => onPress(rowIndex, columnIndex)} style={styles.cell}>
-                  {cell === "o" && <View style={styles.circle} />}
-                  {cell === "x" && (
-                    <View style={styles.cross}>
-                      <View style={styles.crossLine} />
-                      <View style={[styles.crossLine, styles.crossLineReversed]} />
-                    </View>
-                  )}
-                </Pressable>
+                <Cell key={`row-${rowIndex}-col-${columnIndex}`} cell={cell} onPress={() => onPress(rowIndex, columnIndex)} />
               ))}
             </View>
           ))}
@@ -198,28 +195,5 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 10,
     borderColor: "white",
-  },
-  cross: {
-    flex: 1,
-  },
-  crossLine: {
-    position: "absolute",
-    left: "50%",
-    width: 10,
-    height: "100%",
-    backgroundColor: "white",
-    borderRadius: 5,
-    transform: [
-      {
-        rotate: "45deg",
-      },
-    ],
-  },
-  crossLineReversed: {
-    transform: [
-      {
-        rotate: "-45deg",
-      },
-    ],
   },
 });
