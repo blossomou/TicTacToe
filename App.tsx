@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import Cell from './src/components/Cell';
@@ -16,6 +16,11 @@ export default function App() {
 
   const [currentTurn, setCurrentTurn] = useState("x");
 
+  useEffect(() => {
+    if (currentTurn === "o") {
+      botTurn();
+    }
+  }, [currentTurn]);
   const onPress = (rowIndex: number, columnIndex: number) => {
     //console.warn("hello", rowIndex, columnIndex);
 
@@ -134,7 +139,26 @@ export default function App() {
     setCurrentTurn("x");
   };
 
-  // const onPressHandler = () => onPress(rowIndex, columnIndex);
+  interface position {
+    row: number;
+    col: number;
+  }
+  const botTurn = () => {
+    //collect all possible options
+    const possiblePositions: position[] = [];
+    map.forEach((row, rowIndex) => {
+      row.forEach((cell, columnIndex) => {
+        if (cell === "") {
+          possiblePositions.push({ row: rowIndex, col: columnIndex });
+        }
+      });
+    });
+    //choose the best option
+    const chosenOption = possiblePositions[Math.floor(Math.random() * possiblePositions.length)];
+    if (chosenOption) {
+      onPress(chosenOption.row, chosenOption.col);
+    }
+  };
   return (
     <View style={styles.container}>
       <ImageBackground source={bg} style={styles.bg} resizeMode="contain">
