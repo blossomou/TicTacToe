@@ -20,12 +20,13 @@ const copyArray = (original: string[][]) => {
 export default function App() {
   const [map, setMap] = useState(emptyMap);
   const [currentTurn, setCurrentTurn] = useState("x");
+  const [gameMode, setGameMode] = useState("BOT_MEDIUM"); //LOCAL, BOT_EASY, BOT_MEDIUM
 
   useEffect(() => {
-    if (currentTurn === "o") {
+    if (currentTurn === "o" && gameMode !== "LOCAL") {
       botTurn();
     }
-  }, [currentTurn]);
+  }, [currentTurn, gameMode]);
 
   useEffect(() => {
     const winner = getWinner(map);
@@ -166,33 +167,35 @@ export default function App() {
 
     let chosenOption;
 
-    //Attack
-    possiblePositions.forEach((possiblePosition) => {
-      const mapCopy = copyArray(map);
-      mapCopy[possiblePosition.row][possiblePosition.col] = "o";
-
-      const winner = getWinner(mapCopy);
-
-      if (winner === "o") {
-        //attack that position
-        chosenOption = possiblePosition;
-      }
-    });
-
-    if (!chosenOption) {
-      //Defend
-      //Check if the opponent WINS if it takes one of the possible positions
+    if (gameMode === "BOT_MEDIUM") {
+      //Attack
       possiblePositions.forEach((possiblePosition) => {
         const mapCopy = copyArray(map);
-        mapCopy[possiblePosition.row][possiblePosition.col] = "x";
+        mapCopy[possiblePosition.row][possiblePosition.col] = "o";
 
         const winner = getWinner(mapCopy);
 
-        if (winner === "x") {
-          //Defend that position
+        if (winner === "o") {
+          //attack that position
           chosenOption = possiblePosition;
         }
       });
+
+      if (!chosenOption) {
+        //Defend
+        //Check if the opponent WINS if it takes one of the possible positions
+        possiblePositions.forEach((possiblePosition) => {
+          const mapCopy = copyArray(map);
+          mapCopy[possiblePosition.row][possiblePosition.col] = "x";
+
+          const winner = getWinner(mapCopy);
+
+          if (winner === "x") {
+            //Defend that position
+            chosenOption = possiblePosition;
+          }
+        });
+      }
     }
 
     //choose random
@@ -231,6 +234,41 @@ export default function App() {
               ))}
             </View>
           ))}
+        </View>
+        <View style={styles.buttons}>
+          <Text
+            onPress={() => setGameMode("LOCAL")}
+            style={[
+              styles.button,
+              { backgroundColor: gameMode === "LOCAL" ? "#4F5686" : "#191F24" },
+            ]}
+          >
+            Local
+          </Text>
+          <Text
+            onPress={() => setGameMode("BOT_EASY")}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  gameMode === "BOT_EASY" ? "#4F5686" : "#191F24",
+              },
+            ]}
+          >
+            Easy Bot
+          </Text>
+          <Text
+            onPress={() => setGameMode("BOT_MEDIUM")}
+            style={[
+              styles.button,
+              {
+                backgroundColor:
+                  gameMode === "BOT_MEDIUM" ? "#4F5686" : "#191F24",
+              },
+            ]}
+          >
+            Medium Bot
+          </Text>
         </View>
       </ImageBackground>
 
@@ -279,5 +317,20 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 10,
     borderColor: "white",
+  },
+
+  buttons: {
+    position: "absolute",
+    bottom: 50,
+    flexDirection: "row",
+  },
+
+  button: {
+    color: "white",
+    margin: 10,
+    fontSize: 20,
+    backgroundColor: "#191F24",
+    padding: 10,
+    paddingHorizontal: 15,
   },
 });
