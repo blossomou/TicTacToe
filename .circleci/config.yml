@@ -65,21 +65,15 @@ workflows:
   build-deploy:
     jobs:
       - publish_feature_to_expo:
-          context: tic-tac-toe-feature
-
           filters:
             branches:
-              ignore: main
+              ignore: master
       - publish_to_expo_staging:
-          context: tic-tac-toe-staging
-
           filters:
             branches:
-              only: main
+              only: master
 
       - publish_to_expo_production:
-          context: tic-tac-toe-prod
-
           filters:
             branches:
               ignore: /.*/
